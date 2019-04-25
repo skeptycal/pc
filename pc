@@ -196,7 +196,7 @@ git_repo () {
         echo ''
         pipenv --python 3.7
     fi
-    pipenv shell
+    # pipenv shell # this screws up the script ...
     pipenv clean
     pipenv graph
     pipenv check
