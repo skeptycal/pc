@@ -1,8 +1,12 @@
 #!/usr/bin/env zsh
 ###############################################################################
+# I had a lot of trouble with updating and hooks not working
+# Searching located some Stack Overflow posts with a simple fix
+# It helped in my case, but I thought this was a good chance
+#   to make a script to automate new project setup ... here it is.
 version='0.7.2'
 name='pc'
-detail="pre-commit automation for macOS"
+detail="pre-commit repo automation for macOS"
 ###############################################################################
 # author_info:
 #   Source Author Information and general strings, functions, and blobs
@@ -164,11 +168,15 @@ yaml_checkup () {
 }
 setup_files () {
     readme_md () {
+        cp readme.md readme.bak.md &>/dev/null
         echo "# $name version $version" >readme.md
         echo -e "\n---\n" >>readme.md
+        echo '```bash\n`' >>readme.md
         echo "## $detail" >>readme.md
+        echo '```\n' >>readme.md
     }
-    cp ~/.dotfiles/.gitignore . &>/dev/null
+    cp .gitignore .gitignore.bak &>/dev/null
+    cp ~/.dotfiles/.gitignore .gitignore &>/dev/null
     readme_md
     # travis
 
@@ -219,7 +227,11 @@ check_args () {
                 all_checkups
                 exit 0
                 ;;
-
+            reset|-r|--reset)
+                echo ''
+                echo '-> pc - reset initial repo files'
+                setup_files
+                exit 0
             version|-v|--version)
                 echo "$description"
                 exit 0
