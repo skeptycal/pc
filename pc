@@ -181,7 +181,7 @@ setup_files () {
 
 }
 git_repo () {
-    mkdir bak
+    mkdir bak &>/dev/null
     git status &>/dev/null
     if [[ $? != 0 ]]; then
         echo 'This is not a git repo. Setting up git and github ...'
