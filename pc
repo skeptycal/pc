@@ -124,7 +124,6 @@ yaml_checkup () {
         if [ -r ".pre-commit-config.yaml" ]; then
             cat .pre-commit-config.yaml >.pre-commit-config.yaml.bak
             error_code=$?
-            echo "bak error code: $error_code" #! test
             if [[ $error_code != 0 ]]; then
                 echo "WARNING - backup file NOT created: .pre-commit-config.yaml.bak"
                 # ONLY WARN -- NO EXIT $error_code
@@ -136,7 +135,6 @@ yaml_checkup () {
     yaml_config () {
         cat .pre-commit-template.yaml >.pre-commit-config.yaml
         error_code=$?
-        echo "config error code: $error_code" #! test
         if [[ $error_code != 0 ]]; then
             echo "WARNING: config file NOT created: .pre-commit-config.yaml"
             echo 'Exiting now ...'
@@ -221,6 +219,7 @@ all_checkups () {
     yaml_checkup
 }
 check_args () {
+    echo "arg 1 ... $1"
     if [ "$1" ]; then
         case "$1" in
             init|-i|--init)
@@ -253,7 +252,6 @@ check_args () {
         esac
     fi
 }
-
 main_loop () {
     check_args
     pre-commit autoupdate
