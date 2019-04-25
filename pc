@@ -122,7 +122,7 @@ prereqs_checkup () {
 yaml_checkup () {
     yaml_backup () {
         if [ -r ".pre-commit-config.yaml" ]; then
-            cat .pre-commit-config.yaml >.pre-commit-config.yaml.bak
+            cp -f .pre-commit-config.yaml bak/.pre-commit-config.yaml.bak
             error_code=$?
             if [[ $error_code != 0 ]]; then
                 echo "WARNING - backup file NOT created: .pre-commit-config.yaml.bak"
@@ -166,7 +166,7 @@ yaml_checkup () {
 }
 setup_files () {
     readme_md () {
-        cp readme.md readme.bak.md &>/dev/null
+        cp -f readme.md bak/readme.bak.md &>/dev/null
         echo "# $name version $version" >readme.md
         echo -e "\n---\n" >>readme.md
         echo "## $detail\n" >>readme.md
@@ -174,13 +174,14 @@ setup_files () {
         echo "$sample_pre_commit_template" >>readme.md
         echo '```\n' >>readme.md
     }
-    cp .gitignore .gitignore.bak &>/dev/null
+    cp -f .gitignore bak/.gitignore.bak &>/dev/null
     cp ~/.dotfiles/.gitignore .gitignore &>/dev/null
     readme_md
     # travis
 
 }
 git_repo () {
+    mkdir bak
     git status &>/dev/null
     if [[ $? != 0 ]]; then
         echo 'This is not a git repo. Setting up git and github ...'
