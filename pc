@@ -4,6 +4,7 @@
 # Searching located some Stack Overflow posts with a simple fix
 # It helped in my case, but I thought this was a good chance
 #   to make a script to automate new project setup ... here it is.
+# based on pre-commit 1.15.1 <https://pre-commit.com/>
 version='0.7.2'
 name='pc'
 detail="pre-commit repo automation for macOS"
