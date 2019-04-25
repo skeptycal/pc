@@ -15,7 +15,8 @@ detail="pre-commit repo automation for macOS"
 #       github, portfolio, twitter, generic_usage]
 # And these specific fields [pre-commit_usage, pre-commit_instructions,
 #                            sample_pre_commit_template]
-source $HOME/bin/author_info
+# May also contain [version, name, and detail] to overide defaults
+source ./author_info || source $HOME/bin/author_info
 ###############################################################################
 # Install prerequisites as needed
 #   brew, git, hub, pipenv, pre-commit
