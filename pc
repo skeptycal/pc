@@ -227,11 +227,14 @@ check_args () {
                 all_checkups
                 exit 0
                 ;;
+
             reset|-r|--reset)
                 echo ''
                 echo '-> pc - reset initial repo files'
                 setup_files
                 exit 0
+                ;;
+
             version|-v|--version)
                 echo "$description"
                 exit 0
