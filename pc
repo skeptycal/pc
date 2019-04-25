@@ -1,0 +1,323 @@
+#!/usr/bin/env bash
+###############################################################################
+version='0.7.2'
+name='pc'
+detail="pre-commit automation for macOS"
+###############################################################################
+# author_info:
+#   Source Author Information and general strings, functions, and blobs
+# This file gives general fields [description, author, copyright, license,
+#       github, portfolio, twitter, generic_usage]
+# And these specific fields [pre-commit_usage, pre-commit_instructions,
+#                            sample_pre_commit_template]
+source $HOME/bin/author_info
+###############################################################################
+# Install prerequisites as needed
+#   brew, git, hub, pipenv, pre-commit
+prereqs_checkup () {
+    brew_checkup () {
+        # just for fun ...
+        which -s brew
+        if [[ $? != 0 ]] ; then
+            # Install Homebrew
+            echo 'Homebrew is required but not installed. Installing latest version ...'
+            echo ''
+            xcode-select --install &>/dev/null
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+            which -s brew
+            if [[ $? != 0 ]] ; then
+                echo 'Homebrew is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                echo ''
+                exit 1
+            else
+                echo `brew --version | tail -n +1 | head -1`' installed ... continuing with setup ...'
+                echo ''
+            fi
+        fi
+        brew update
+        brew doctor
+    }
+    git_checkup () {
+        which -s git
+        if [[ $? != 0 ]]; then
+            echo 'Git is required but not installed. Installing latest version ...'
+            echo ''
+            brew install git
+            which -s git
+            if [[ $? != 0 ]]; then
+                echo 'Git is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                echo ''
+                exit 1
+            else
+                echo `git --version | tail -n +1 | head -1`' installed ... continuing with setup ...'
+                echo ''
+            fi
+        fi
+    }
+    hub_checkup () {
+        which -s hub
+        if [[ $? != 0 ]]; then
+            echo 'Hub is required but not installed. Installing latest version ...'
+            echo ''
+            brew install hub
+            which -s hub
+            if [[ $? != 0 ]]; then
+                echo 'Hub is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                echo ''
+                exit 1
+            else
+                echo `hub --version | grep hub`' installed ... continuing with setup ...'
+                echo ''
+            fi
+        fi
+    }
+    pipenv_checkup () {
+        which -s pipenv
+        if [[ $? != 0 ]]; then
+            echo 'Pipenv is required but not installed. Installing latest version ...'
+            echo ''
+            brew install pipenv &>/dev/null
+            which -s pipenv
+            if [[ $? != 0 ]]; then
+                echo 'Pipenv is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                echo ''
+                exit 1
+            else
+                echo `pipenv --version`' installed ... continuing with setup ...'
+                echo ''
+            fi
+        fi
+    }
+    pre_commit_checkup () {
+        which -s pre-commit
+        if [[ $? != 0 ]]; then
+            brew install pre-commit &>/dev/null
+            which -s pre-commit
+            if [[ $? != 0 ]]; then
+                echo 'Pre-commit is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                echo ''
+                exit 1
+            else
+                echo `pre-commit --version`' installed ... continuing with pre-commit setup'
+                echo ''
+                # use my sample template instead of `pre-commit sample-config`
+                echo "$sample_pre_commit_template" >.pre-commit-template.yaml
+                pre-commit install --install-hooks
+                pre-commit autoupdate
+            fi
+        fi
+    }
+    brew_checkup
+    git_checkup
+    hub_checkup
+    pipenv_checkup
+    pre_commit_checkup
+}
+###############################################################################
+# Setup Repo - git, github remote, pipenv install, pre-commit config
+yaml_checkup () {
+    yaml_backup () {
+        if [ -r ".pre-commit-config.yaml" ]; then
+            cat .pre-commit-config.yaml >.pre-commit-config.yaml.bak
+            error_code=$?
+            echo "bak error code: $error_code" #! test
+            if [[ $error_code != 0 ]]; then
+                echo "WARNING - backup file NOT created: .pre-commit-config.yaml.bak"
+                # ONLY WARN -- NO EXIT $error_code
+            else
+                echo "-> backup file created: .pre-commit-config.yaml.bak"
+            fi
+        fi
+    }
+    yaml_config () {
+        cat .pre-commit-template.yaml >.pre-commit-config.yaml
+        error_code=$?
+        echo "config error code: $error_code" #! test
+        if [[ $error_code != 0 ]]; then
+            echo "WARNING: config file NOT created: .pre-commit-config.yaml"
+            echo 'Exiting now ...'
+            exit $error_code
+        else
+            echo "-> config file created: .pre-commit-config.yaml"
+        fi
+        pre-commit autoupdate
+        if [[ $? != 0 ]]; then
+            echo -e "\nWARNING: Error occured while retrieving updated 'master:sha' values from GitHub. Please check your connection and try again later.\n\n"
+            exit 1
+        else
+            echo -e "\nPre-commit successfully updated your configuration."
+            pre-commit
+        fi
+    }
+
+    if [ -r ".pre-commit-template.yaml" ]; then
+        echo "Template file (.pre-commit-template.yaml) found in current directory."
+    else
+        # ONLY WARN -- NO EXIT $error_code
+        echo "WARNING: Template file (.pre-commit-template.yaml) NOT found in current directory."
+        echo "Using generic template ..."
+        echo ""
+        echo "$sample_pre_commit_template" >.pre-commit-template.yaml
+    fi
+    yaml_backup
+    yaml_config
+}
+setup_files () {
+    readme_md () {
+        echo "# $name version $version" >readme.md
+        echo -e "\n---\n" >>readme.md
+        echo "## $detail" >>readme.md
+    }
+    cp ~/.dotfiles/.gitignore . &>/dev/null
+    readme_md
+    # travis
+
+}
+git_repo () {
+    git status &>/dev/null
+    if [[ $? != 0 ]]; then
+        echo 'This is not a git repo. Setting up git and github ...'
+        echo ''
+        echo 'Git repo setup ...'
+        echo ''
+        git init
+        echo 'GitHub remote repo setup ...'
+        echo ''
+        hub create
+        echo ''
+    fi
+    git status
+    git remote -v
+    # initialize pipenv
+    pipenv graph &>/dev/null
+    if [[ $? != 0 ]]; then
+        echo 'This is not a pipenv virtual environment.'
+        echo 'Setting up pipenv --python 3.7 ...'
+        echo ''
+        pipenv --python 3.7
+    fi
+    pipenv shell
+    pipenv clean
+    pipenv graph
+    pipenv check
+    # git initial commit
+    git add --all
+    git commit -m 'initial commit'
+    git push --set-upstream origin $(git_current_branch)
+    git status
+}
+all_checkups () {
+    prereqs_checkup
+    setup_files
+    git_repo
+    yaml_checkup
+}
+check_args () {
+    if [ "$1" ]; then
+        case "$1" in
+            init|-i|--init)
+                all_checkups
+                exit 0
+                ;;
+
+            version|-v|--version)
+                echo "$description"
+                exit 0
+                ;;
+
+            help|-h|--help)
+                echo "$pre_commit_instructions"
+                exit 0
+                ;;
+
+            *)
+                echo "Invalid option: $1"
+                echo ""
+                echo "$pre_commit_usage"
+                exit 2
+        esac
+    fi
+}
+
+main_loop () {
+    check_args
+    pre-commit autoupdate
+    if [[ $? != 0 ]]; then
+        all_checkups
+    else
+        yaml_checkup
+    fi
+}
+
+main_loop
+
+###############################################################################
+# References:
+# automating pre-commit hooks for Git and GitHub
+#
+# instructions found on https://github.com/pre-commit/pre-commit/issues/366
+
+# Correct solution from this post:
+
+# Author: Tom Hensel (https://github.com/gretel)
+
+# The value of sha should not be master or HEAD. Either one will only match
+# the latest version at install time and prevent subsequent auto updates. On
+# GitHub, the id of the most recent commit can be looked up easily (i.e.
+# commit/master).
+
+# Alternatively, setting sha to master and running pre-commit autoupdate
+# before anything else will automatically populate the values of the sha keys
+# in the configuration file. Example:
+# -   repo: meta
+#     - hooks:
+#       - id: check-hooks-apply, check-useless-excludes, identity
+# -   repo: git://github.com/pre-commit/pre-commit-hooks
+#     sha: master #* <-- These lines are what is needed
+#     hooks:
+#     -   id: check-added-large-files
+#     -   id: check-byte-order-marker
+#     -   id: check-docstring-first
+#     -   id: check-case-conflict
+#     -   id: check-json
+#     -   id: check-merge-conflict
+#     -   id: check-symlinks
+#     -   id: check-yaml
+#     -   id: detect-aws-credentials
+#     -   id: detect-private-key
+#     -   id: end-of-file-fixer
+#     -   id: flake8
+#     -   id: pretty-format-json
+#     -   id: requirements-txt-fixer
+#     -   id: trailing-whitespace
+# -   repo: git://github.com/pre-commit/mirrors-pylint
+#     sha: master #* <-- These lines are what is needed
+#     hooks:
+#     -   id: pylint
+
+# Running `pre-commit autoupdate` updates this to:
+
+# -   repo: git://github.com/pre-commit/pre-commit-hooks
+#     sha: 35548254adb636ce52b5574eb1904b8c795b673e # * <-- something similar
+#     hooks:
+#     -   id: check-added-large-files
+#     -   id: check-byte-order-marker
+#     -   id: check-docstring-first
+#     -   id: check-case-conflict
+#     -   id: check-json
+#     -   id: check-merge-conflict
+#     -   id: check-symlinks
+#     -   id: check-yaml
+#     -   id: detect-aws-credentials
+#     -   id: detect-private-key
+#     -   id: end-of-file-fixer
+#     -   id: flake8
+#     -   id: flake8
+#         args: [--max-line-length=79y]
+#     -   id: pretty-format-json
+#     -   id: requirements-txt-fixer
+#     -   id: trailing-whitespace
+# -   repo: git://github.com/pre-commit/mirrors-pylint
+#     sha: 4de6c8dfadef1a271a814561ce05b8bc1c446d22 # * <-- something similar
+#     hooks:
+#     -   id: pylint
