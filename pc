@@ -5,7 +5,7 @@
 # It helped in my case, but I thought this was a good chance
 #   to make a script to automate new project setup ... here it is.
 # based on pre-commit 1.15.1 <https://pre-commit.com/>
-version='0.7.2'
+version='0.8.1'
 name='pc'
 detail="pre-commit repo automation for macOS"
 ###############################################################################
@@ -13,10 +13,10 @@ detail="pre-commit repo automation for macOS"
 #   Source Author Information and general strings, functions, and blobs
 # This file gives general fields [description, author, copyright, license,
 #       github, portfolio, twitter, generic_usage]
-# And these specific fields [pre-commit_usage, pre-commit_instructions,
-#                            sample_pre_commit_template]
+# And these specific fields [pre-commit_usage, program_instructions,
+#                            sample_settings_template]
 # May also contain [version, name, and detail] to overide defaults
-source ./author_info || source $HOME/bin/author_info
+source ./.info.cfg || source $HOME/bin/.info.cfg
 ###############################################################################
 # Install prerequisites as needed
 #   brew, git, hub, pipenv, pre-commit
@@ -107,7 +107,7 @@ prereqs_checkup () {
                 echo `pre-commit --version`' installed ... continuing with pre-commit setup'
                 echo ''
                 # use my sample template instead of `pre-commit sample-config`
-                echo "$sample_pre_commit_template" >.pre-commit-template.yaml
+                echo "$sample_settings_template" >.pre-commit-template.yaml
                 pre-commit install --install-hooks
                 pre-commit autoupdate
             fi
@@ -161,34 +161,36 @@ yaml_checkup () {
         echo "WARNING: Template file (.pre-commit-template.yaml) NOT found in current directory."
         echo "Using generic template ..."
         echo ""
-        echo "$sample_pre_commit_template" >.pre-commit-template.yaml
+        echo "$sample_settings_template" >.pre-commit-template.yaml
     fi
     yaml_backup
     yaml_config
 }
 which_copy () {
-
+    if [ -r "$file_bak" ]; then
+        cp -f $file_bak bak/$file_bak.bak &>/dev/null
+    which -s $filebak &>/dev/null
+    fi
+    if [[ $? != 0 ]]; then
+        cat `which $file_bak` >$file_bak
+    fi
 }
 setup_files () {
     readme_md () {
         cp -f readme.md bak/readme.bak.md &>/dev/null
         echo "# $name version $version" >readme.md
+        echo "# time"
         echo -e "\n---\n" >>readme.md
         echo "## $detail\n" >>readme.md
         echo '```bash\n' >>readme.md
-        echo "$sample_pre_commit_template" >>readme.md
+        echo "$sample_settings_template" >>readme.md
         echo '```\n' >>readme.md
     }
-    cp -f .gitignore bak/.gitignore.bak &>/dev/null
-    cat `which .gitignore` >.gitignore
-    cp -f author_info bak/author_info.bak &>/dev/null
-    cat `which author_info` >author_info
-    cp -f .travis.yml bak/.travis.yml.bak &>/dev/null
-    cat `which .travis.yml` >.travis.yml
-    readme_md
-    cat `which pc` >pc
-    # travis
+    file_bak='./.gitignore' && which_copy
+    file_bak='./.info.cfg' && which_copy
+    file_bak='./.travis.yml' && which_copy
 
+    readme_md
 }
 git_repo () {
     mkdir bak &>/dev/null
@@ -250,14 +252,14 @@ check_args () {
             ;;
 
         help|-h|--help)
-            echo "$pre_commit_instructions"
+            echo "$program_instructions"
             exit 0
             ;;
 
         *)
             echo "Invalid option: $1"
             echo ""
-            echo "$pre_commit_usage"
+            echo "$program_usage"
             exit 2
     esac
 }

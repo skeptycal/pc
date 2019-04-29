@@ -1,4 +1,4 @@
-# pc version 0.7.2
+# pc version 0.8.1
 
 ---
 
@@ -8,14 +8,14 @@
 
 
 ###############################################################################
-# pc : pre-commit repo automation for macOS (version 0.7.2)
+# pc : pre-commit repo automation for macOS (version 0.8.1)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
 # copyright - 2019 (c) Michael Treanor
 # license   - MIT <https://opensource.org/licenses/MIT>
 # github    - https://www.github.com/skeptycal
 
-# Usage: pc {init|version|help}
+# Usage: pc {init|reset|version|help}
 
 #   Parameters:
 #       init, -i, --init        -- install and initialize
@@ -33,9 +33,10 @@
 
 
 # Run this script if changes to the pre-commit or yaml configuration are added.
+# You can also setup an initial repo with common tools by using
 
 # Please make changes directly to the 'template' file:
-#     <.pre\-commit-template.yaml>
+#     <.pre-commit-template.yaml>
 # and run the script 'pc' to update the yaml to current versioning.
 
 # Please do not make changes directly to the 'config' file. The 'config' file:
