@@ -166,6 +166,9 @@ yaml_checkup () {
     yaml_backup
     yaml_config
 }
+which_copy () {
+
+}
 setup_files () {
     readme_md () {
         cp -f readme.md bak/readme.bak.md &>/dev/null
@@ -177,8 +180,13 @@ setup_files () {
         echo '```\n' >>readme.md
     }
     cp -f .gitignore bak/.gitignore.bak &>/dev/null
-    cp ~/.dotfiles/.gitignore .gitignore &>/dev/null
+    cat `which .gitignore` >.gitignore
+    cp -f author_info bak/author_info.bak &>/dev/null
+    cat `which author_info` >author_info
+    cp -f .travis.yml bak/.travis.yml.bak &>/dev/null
+    cat `which .travis.yml` >.travis.yml
     readme_md
+    cat `which pc` >pc
     # travis
 
 }
