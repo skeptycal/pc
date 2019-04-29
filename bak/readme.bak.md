@@ -33,10 +33,9 @@
 
 
 # Run this script if changes to the pre-commit or yaml configuration are added.
-# You can also setup an initial repo with common tools by using
 
 # Please make changes directly to the 'template' file:
-#     <.pre-commit-template.yaml>
+#     <.pre\-commit-template.yaml>
 # and run the script 'pc' to update the yaml to current versioning.
 
 # Please do not make changes directly to the 'config' file. The 'config' file:

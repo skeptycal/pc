@@ -191,12 +191,13 @@ yaml_checkup () {
 setup_files () {
     which_copy () {
         # backup previous and create default file
-        if [ -r "$file_bak" ]; then
+        if [ -r "./$file_bak" ]; then
             cp -f $file_bak bak/$file_bak.bak &>/dev/null
-        fi
-        which -s $filebak &>/dev/null
-        if [[ $? != 0 ]]; then
-            cat `which $file_bak` >$file_bak
+        else
+            which -s $filebak &>/dev/null
+            if [[ $? != 0 ]]; then
+                cat `which $file_bak` >$file_bak
+            fi
         fi
     }
     readme_md () {
@@ -204,6 +205,8 @@ setup_files () {
         cp -f README.md bak/README.bak.md &>/dev/null
         echo "# $name version $version" >README.md
         echo "# time"
+        echo -e "\n---\n" >>README.md
+        tree >>README.md
         echo -e "\n---\n" >>README.md
         echo "## $detail\n" >>README.md
         echo '```bash\n' >>README.md
@@ -214,7 +217,6 @@ setup_files () {
     file_bak='.info.cfg' && which_copy
     file_bak='.travis.yml' && which_copy
     file_bak='codecov.yml' && which_copy
-
 
     readme_md
     if [ -r ".pre-commit-template.yaml" ]; then
