@@ -17,6 +17,20 @@
 └── tree.txt
 
 1 directory, 11 files
+.
+├── Pipfile
+├── Pipfile.lock
+├── bak
+│   ├── codecov.yml.bak
+│   └── readme.bak.md
+├── codecov.yml
+├── pc
+├── readme.md
+├── readme.template.md
+├── requirements.txt
+└── tree.txt
+
+1 directory, 10 files
 
 ---
 

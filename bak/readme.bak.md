@@ -2,6 +2,24 @@
 
 ---
 
+.
+├── Pipfile
+├── Pipfile.lock
+├── bak
+│   ├── author_info.bak
+│   ├── codecov.yml.bak
+│   └── readme.bak.md
+├── codecov.yml
+├── pc
+├── readme.md
+├── readme.template.md
+├── requirements.txt
+└── tree.txt
+
+1 directory, 11 files
+
+---
+
 ## pre-commit repo automation for macOS
 
 ```bash
