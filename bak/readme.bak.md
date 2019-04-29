@@ -2,21 +2,23 @@
 
 ---
 
+```bash
+
 .
 ├── Pipfile
 ├── Pipfile.lock
 ├── bak
-│   ├── author_info.bak
 │   ├── codecov.yml.bak
 │   └── readme.bak.md
 ├── codecov.yml
 ├── pc
 ├── readme.md
 ├── readme.template.md
-├── requirements.txt
-└── tree.txt
+└── requirements.txt
 
-1 directory, 11 files
+1 directory, 9 files
+```
+
 
 ---
 

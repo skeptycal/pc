@@ -206,8 +206,9 @@ setup_files () {
         echo "# $name version $version" >README.md
         echo "# time"
         echo -e "\n---\n" >>README.md
-        tree >>tree.txt
-        cat tree.txt >>README.md
+        echo -e '```bash\n' >>README.md
+        tree >>README.md
+        echo -e '\n```' >>README.md
         echo -e "\n---\n" >>README.md
         echo "## $detail\n" >>README.md
         echo '```bash\n' >>README.md
