@@ -164,6 +164,7 @@ yaml_checkup () {
     }
     yaml_config () {
         # copy template to current config file
+        readme_md
         cat .pre-commit-template.yaml >.pre-commit-config.yaml
         error_code=$?
         #   and check to make sure it worked ...
@@ -201,7 +202,6 @@ yaml_checkup () {
     fi
     yaml_backup
     yaml_config
-    readme_md
 }
 setup_files () {
     which_copy () {

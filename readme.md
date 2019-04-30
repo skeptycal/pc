@@ -1,8 +1,8 @@
-# auto pre-commit version 1.0.0
+# auto pre-commit version 1.0.1
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/416b8ca3-82db-470f-9adf-a6d06264ca75/deploy-status)](https://app.netlify.com/sites/mystifying-keller-ab5658/deploys)
 
-04-30-2019 | 03:51:48
+04-30-2019 | 03:54:23
 
 ---
 
@@ -12,7 +12,7 @@
 
 
 ###############################################################################
-# auto pre-commit : pre-commit deployment automation for macOS (version 1.0.0)
+# auto pre-commit : pre-commit deployment automation for macOS (version 1.0.1)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
 # copyright - 2019 (c) Michael Treanor
