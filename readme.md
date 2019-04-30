@@ -1,42 +1,25 @@
-# pc version 0.8.1
+# project version 0.0.1
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/416b8ca3-82db-470f-9adf-a6d06264ca75/deploy-status)](https://app.netlify.com/sites/mystifying-keller-ab5658/deploys)
+
+04-30-2019 | 03:41:17
 
 ---
 
-```bash
-
-.
-├── Pipfile
-├── Pipfile.lock
-├── bak
-│   ├── codecov.yml.bak
-│   ├── pc.bak
-│   └── readme.bak.md
-├── codecov.yml
-├── pc
-├── readme.md
-├── readme.template.md
-└── requirements.txt
-
-1 directory, 10 files
-
-```
-
----
-
-## pre-commit repo automation for macOS
+## portfolio project for macOS
 
 ```bash
 
 
 ###############################################################################
-# pc : pre-commit repo automation for macOS (version 0.8.1)
+# project : portfolio project for macOS (version 0.0.1)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
 # copyright - 2019 (c) Michael Treanor
 # license   - MIT <https://opensource.org/licenses/MIT>
 # github    - https://www.github.com/skeptycal
 
-# Usage: pc {init|reset|version|help}
+# Usage: project {init|reset|version|help}
 
 #   Parameters:
 #       init, -i, --init        -- install and initialize
@@ -87,7 +70,6 @@ repos:
           - id: check-json
           - id: check-merge-conflict
           - id: check-symlinks
-          - id: check-yaml
           #   -   id: detect-aws-credentials
           - id: detect-private-key
           - id: end-of-file-fixer
@@ -118,4 +100,26 @@ repos:
 #     files: \.(php)$
 #     args: [--level=PSR2]
 
+```
+
+
+---
+
+```bash
+
+.
+├── Pipfile
+├── Pipfile.lock
+├── bak
+│   ├── codecov.yml.bak
+│   ├── pc.bak
+│   └── readme.bak.md
+├── codecov.yml
+├── pc
+├── readme.md
+├── readme.template.md
+├── requirements.txt
+└── setup.py
+
+1 directory, 11 files
 ```

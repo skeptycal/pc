@@ -132,6 +132,22 @@ prereqs_checkup () {
 }
 ###############################################################################
 # Setup Repo - git, github remote, pipenv install, pre-commit config
+readme_md () {
+    # Generate default README.md
+    cp -f README.md bak/README.bak.md &>/dev/null
+    echo "# $name version $version" >README.md
+    echo "\n$badges\n" >>README.md
+    echo `date +"%m-%d-%Y | %T"` >>README.md
+    echo -e "\n---\n" >>README.md
+    echo "## $detail\n" >>README.md
+    echo '```bash\n' >>README.md
+    echo "$sample_settings_template" >>README.md
+    echo '```\n' >>README.md
+    echo -e "\n---\n" >>README.md
+    echo -e '```bash\n' >>README.md
+    tree >>README.md
+    echo '```\n' >>README.md
+}
 yaml_checkup () {
     # pre-commit yaml: check for template, backup config, update new config
     yaml_backup () {
@@ -185,8 +201,8 @@ yaml_checkup () {
     fi
     yaml_backup
     yaml_config
+    readme_md
 }
-
 setup_files () {
     which_copy () {
         # backup previous and create default file
@@ -195,22 +211,7 @@ setup_files () {
         fi
         cat "$pc_path""$file_bak" >$file_bak
     }
-    readme_md () {
-        # Generate default README.md
-        cp -f README.md bak/README.bak.md &>/dev/null
-        echo "# $name version $version" >README.md
-        echo "# time"
-        echo -e "\n---\n" >>README.md
-        echo "## $detail\n" >>README.md
-        echo '```bash\n' >>README.md
-        echo "$sample_settings_template" >>README.md
-        echo '```\n' >>README.md
-        echo -e "\n---\n" >>README.md
-        echo -e '```bash\n' >>README.md
-        tree >>README.md
-        echo '```\n' >>README.md
 
-    }
     file_bak='.gitignore' && which_copy
     file_bak='.info.cfg' && which_copy
     file_bak='.travis.yml' && which_copy

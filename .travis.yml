@@ -21,7 +21,6 @@ install:
   # Default ...
   # - pip install -r requirements.txt
   # - pip install .
-
   # Specific ...
   - pip install -e .
   # Limit setuptools as some newer versions have Issues(tm). This needs doing
