@@ -217,7 +217,6 @@ setup_files () {
     file_bak='.info.cfg' && which_copy
     file_bak='.travis.yml' && which_copy
     file_bak='codecov.yml' && which_copy
-    file_bak='pc' && which_copy
 
     readme_md
 
