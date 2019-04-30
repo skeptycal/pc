@@ -1,4 +1,3 @@
-
 ###############################################################################
 # pc : pre-commit repo automation for macOS (version 0.8.1)
 
@@ -23,7 +22,6 @@
 #       and updated to current master sha from GitHub
 ###############################################################################
 
-
 # Run this script if changes to the pre-commit or yaml configuration are added.
 
 # Please make changes directly to the 'template' file:
@@ -37,33 +35,52 @@
 #   commit file will be overwritten when updating.
 ###############################################################################
 
-
-# Sample yaml template ########################################################
+# Pre-commit Sample yaml template
 default_language_version:
-    python: python3.7
+  python: python3.7
 default_stages: [commit, push]
-exclude: '^$'
+exclude: "^$"
 fail_fast: false
+# @see http://pre-commit.com/
 repos:
--   repo: git://github.com/pre-commit/pre-commit-hooks
+  - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: 6d7906e131976a1ce14ab583badb734727c5da3e
     hooks:
-    -   id: check-added-large-files
-    -   id: check-byte-order-marker
-    -   id: check-docstring-first
-    -   id: check-case-conflict
-    -   id: check-json
-    -   id: check-merge-conflict
-    -   id: check-symlinks
-    -   id: check-yaml
-#   -   id: detect-aws-credentials
-    -   id: detect-private-key
-    -   id: end-of-file-fixer
-    -   id: flake8
-    -   id: pretty-format-json
-    -   id: requirements-txt-fixer
-    -   id: trailing-whitespace
--   repo: git://github.com/pre-commit/mirrors-pylint
+      - id: check-yaml
+        files: \.(yaml|yml)$
+      - id: check-added-large-files
+      - id: check-byte-order-marker
+      - id: check-docstring-first
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      #   -   id: detect-aws-credentials
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: flake8
+      - id: pretty-format-json
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+  # Python settings ... replace as needed
+  - repo: git://github.com/pre-commit/mirrors-pylint
     rev: v2.3.1
     hooks:
-    -   id: pylint
+      - id: pylint
+# PHP settings ... replace as needed
+# - repo: git@github.com:hootsuite/pre-commit-php.git
+#   sha: 1.1.0
+#   hooks:
+#   - id: php-lint-all
+#   - id: php-unit
+#   - id: php-cs
+#     files: \.(php)$
+#     args: [--standard=PSR1 -p]
+#   - id: php-cbf
+#     files: \.(php)$
+#     args: [--standard=PSR1 -p]
+# The tool will fail a build when it has made changes to the staged files. This allows a developer to do a git diff and examine the changes that it has made. Remember that you may omit this if needed with a SKIP=php-cs-fixer git commit.
+#   - id: php-cs-fixer
+#     files: \.(php)$
+#     args: [--level=PSR2]

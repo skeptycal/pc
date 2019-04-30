@@ -5,9 +5,7 @@
 # It helped in my case, but I thought this was a good chance
 #   to make a script to automate new project setup ... here it is.
 # based on pre-commit 1.15.1 <https://pre-commit.com/>
-version='0.8.1'
-name='pc'
-detail="pre-commit repo automation for macOS"
+
 ###############################################################################
 # .info.cfg - Source Author Information and general strings, functions,
 #   and blobs. This file gives general fields:
@@ -219,8 +217,10 @@ setup_files () {
     file_bak='.info.cfg' && which_copy
     file_bak='.travis.yml' && which_copy
     file_bak='codecov.yml' && which_copy
+    file_bak='pc' && which_copy
 
     readme_md
+
     if [ -r ".pre-commit-template.yaml" ]; then
         echo "Template file (.pre-commit-template.yaml) found in current directory."
     else
@@ -332,74 +332,3 @@ if [[ -n "$1" ]]; then
 else
     main_loop
 fi
-
-###############################################################################
-# References:
-# automating pre-commit hooks for Git and GitHub
-#
-# instructions found on https://github.com/pre-commit/pre-commit/issues/366
-
-# Correct solution from this post:
-
-# Author: Tom Hensel (https://github.com/gretel)
-
-# The value of sha should not be master or HEAD. Either one will only match
-# the latest version at install time and prevent subsequent auto updates. On
-# GitHub, the id of the most recent commit can be looked up easily (i.e.
-# commit/master).
-
-# Alternatively, setting sha to master and running pre-commit autoupdate
-# before anything else will automatically populate the values of the sha keys
-# in the configuration file. Example:
-# -   repo: meta
-#     - hooks:
-#       - id: check-hooks-apply, check-useless-excludes, identity
-# -   repo: git://github.com/pre-commit/pre-commit-hooks
-#     sha: master #* <-- These lines are what is needed
-#     hooks:
-#     -   id: check-added-large-files
-#     -   id: check-byte-order-marker
-#     -   id: check-docstring-first
-#     -   id: check-case-conflict
-#     -   id: check-json
-#     -   id: check-merge-conflict
-#     -   id: check-symlinks
-#     -   id: check-yaml
-#     -   id: detect-aws-credentials
-#     -   id: detect-private-key
-#     -   id: end-of-file-fixer
-#     -   id: flake8
-#     -   id: pretty-format-json
-#     -   id: requirements-txt-fixer
-#     -   id: trailing-whitespace
-# -   repo: git://github.com/pre-commit/mirrors-pylint
-#     sha: master #* <-- These lines are what is needed
-#     hooks:
-#     -   id: pylint
-
-# Running `pre-commit autoupdate` updates this to:
-
-# -   repo: git://github.com/pre-commit/pre-commit-hooks
-#     sha: 35548254adb636ce52b5574eb1904b8c795b673e # * <-- something similar
-#     hooks:
-#     -   id: check-added-large-files
-#     -   id: check-byte-order-marker
-#     -   id: check-docstring-first
-#     -   id: check-case-conflict
-#     -   id: check-json
-#     -   id: check-merge-conflict
-#     -   id: check-symlinks
-#     -   id: check-yaml
-#     -   id: detect-aws-credentials
-#     -   id: detect-private-key
-#     -   id: end-of-file-fixer
-#     -   id: flake8
-#     -   id: flake8
-#         args: [--max-line-length=79y]
-#     -   id: pretty-format-json
-#     -   id: requirements-txt-fixer
-#     -   id: trailing-whitespace
-# -   repo: git://github.com/pre-commit/mirrors-pylint
-#     sha: 4de6c8dfadef1a271a814561ce05b8bc1c446d22 # * <-- something similar
-#     hooks:
-#     -   id: pylint
