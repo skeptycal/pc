@@ -16,10 +16,11 @@
 #   May also contain:
 #       [version, name, and detail]
 #   to overide the defaults that are set above.
+pc_path="$HOME/bin/utilities/pc/"
 if [ -r './.info.cfg' ]; then
     source ./.info.cfg
 else
-    source $HOME/bin/utilities/.info.cfg
+    source "$pc_path"".info.cfg"
 fi
 ###############################################################################
 # Install prerequisites as needed
@@ -189,14 +190,10 @@ yaml_checkup () {
 setup_files () {
     which_copy () {
         # backup previous and create default file
-        if [ -r "./$file_bak" ]; then
+        if [ -r "$file_bak" ]; then
             cp -f $file_bak bak/$file_bak.bak &>/dev/null
-        else
-            which -s $filebak &>/dev/null
-            if [[ $? != 0 ]]; then
-                cat `which $file_bak` >$file_bak
-            fi
         fi
+        cat "$pc_path""$file_bak" >$file_bak
     }
     readme_md () {
         # Generate default README.md
