@@ -1,8 +1,8 @@
-# pc version 1.0.0
+# auto pre-commit version 1.0.0
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/416b8ca3-82db-470f-9adf-a6d06264ca75/deploy-status)](https://app.netlify.com/sites/mystifying-keller-ab5658/deploys)
 
-04-30-2019 | 03:46:05
+04-30-2019 | 03:51:23
 
 ---
 
@@ -12,20 +12,21 @@
 
 
 ###############################################################################
-# pc : pre-commit deployment automation for macOS (version 1.0.0)
+# auto pre-commit : pre-commit deployment automation for macOS (version 1.0.0)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
 # copyright - 2019 (c) Michael Treanor
 # license   - MIT <https://opensource.org/licenses/MIT>
 # github    - https://www.github.com/skeptycal
 
-# Usage: pc {init|reset|version|help}
+# Usage: auto pre-commit {init|reset|version|help}
 
 #   Parameters:
-#       init, -i, --init        -- install and initialize
-#       reset, -r, --reset      -- reset initial repo files (with backup)
-#       version, -v, --version  -- display version information
-#       help, -h, --help        -- display usage and information
+#       [init, -i, --init]        -- install and initialize
+#       [commit, -m] MESSAGE      -- git commit and push with MESSAGE
+#       [reset, -r, --reset]      -- reset initial repo files (with backup)
+#       [version, -v, --version]  -- display version information
+#       [help, -h, --help]        -- display usage and information
 
 #   .pre-commit-template.yaml must be in current directory
 #       If not, a generic template will be created
