@@ -137,7 +137,7 @@ readme_md () {
     cp -f README.md bak/README.bak.md &>/dev/null
     echo "# $name version $version" >README.md
     echo "\n$badges\n" >>README.md
-    echo `date +"%m-%d-%Y | %T"` >>README.md
+    echo `date +"Last updtate: %m-%d-%Y | %T"` >>README.md
     echo -e "\n---\n" >>README.md
     echo "## $detail\n" >>README.md
     echo '```bash\n' >>README.md
