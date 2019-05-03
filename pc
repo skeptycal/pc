@@ -16,12 +16,30 @@
 #   May also contain:
 #       [version, name, and detail]
 #   to overide the defaults that are set above.
-pc_path="$HOME/bin/utilities/pc/"
-if [ -r './.info.cfg' ]; then
-    source ./.info.cfg
+
+_self="${0##*/}"
+
+# put your main install/repo path here to use defaults
+bin_path="$HOME/bin/utilities/pc.bak/"
+
+# <realpath> requires GNU coreutils on macOS - 'brew install coreutils'
+#   else use this:
+if [[ $(realpath $0 &>/dev/null) ]]; then
+    here=$(realpath $0)
 else
-    source "$pc_path"".info.cfg"
+    here=`[[ $0 = /* ]] && echo "$0" || echo "$PWD/${0#./}"`
 fi
+pc_path="$here"
+if [ -r "${pc_path}.info.cfg" ]; then
+    source "${pc_path}.info.cfg"
+else
+    source "${bin_path}.info.cfg"
+fi
+echo $pc_path
+echo $bin_path
+echo $version
+echo "$_self is called"
+exit 0
 ###############################################################################
 # Install prerequisites as needed
 #   brew, git, hub, pipenv, pre-commit
