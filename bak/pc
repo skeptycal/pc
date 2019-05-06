@@ -1,70 +1,44 @@
 #!/usr/bin/env bash
-
-###############################################################################
-# pc : pre-commit repo automation for macOS (version 1.2.1)
-
-# author    - Michael Treanor  <skeptycal@gmail.com>
-# copyright - 2019 (c) Michael Treanor
-# license   - MIT <https://opensource.org/licenses/MIT>
-# github    - https://www.github.com/skeptycal
-
-# Usage: pc {init|reset|version|help}
-
-#   Parameters:
-#       init, -i, --init        -- install and initialize
-#       reset, -r, --reset      -- reset initial repo files (with backup)
-#       version, -v, --version  -- display version information
-#       help, -h, --help        -- display usage and information
-
-#   .pre-commit-template.yaml must be in current directory
-#       If not, a generic template will be created
-#   .pre-commit-bak.yaml will be created (if possible)
-#       from .pre-commit-config.yaml as backup
-#   .pre-commit-config.yaml will be *overwritten*
-#       and updated to current master sha from GitHub
 ###############################################################################
 # I had a lot of trouble with updating and hooks not working
 # Searching located some Stack Overflow posts with a simple fix
 # It helped in my case, but I thought this was a good chance
-#   to make a script to automate new project setup and periodic updates...
-#
+#   to make a script to automate new project setup ... here it is.
 # based on pre-commit 1.15.1 <https://pre-commit.com/>
+
 ###############################################################################
-# basic ansi text colors
-source "$HOME/bin/symlinks/scripts/basic_text_colors.sh"
+# .info.cfg - Source Author Information and general strings, functions,
+#   and blobs. This file gives general fields:
+#       [description, author, copyright, license,
+#       github, portfolio, twitter, generic_usage]
+#   and these specific fields:
+#       [program_usage, program_instructions, sample_settings_template]
+#   May also contain:
+#       [version, name, and detail]
+#   to overide the defaults that are set above.
 
-# identify script name and path
-_self=${0##*/}
-# _path="${0%/*}"
-here=$PWD'/'
-bin_path=$(realpath $0)
-bin_path="${bin_path%/*}"'/'
-# identify default settings path
-#   default is the folder of the real <pc> script after following symlinks,
-#   but you may adjust as needed to use a separate settings folder, (e.g.)
-# bin_path="$HOME/bin/utilities/pc_bak/"
+_self="${0##*/}"
 
-# load configuration file (.info.cfg) or default config
-source "${here}.info.cfg" &>/dev/null || source "${bin_path}.info.cfg" &>/dev/null
+# put your main install/repo path here to use defaults
+bin_path="$HOME/bin/utilities/pc.bak/"
 
-me "\n****************************************************************"
-oe "${description}\n"
-me "Project details: "
-me "================\n"
-ge "This script name: $_self"
-ge "The script path is: $bin_path"
-ge "The active repo is: $here"
-
-
-echo -e "\n\n\n\n\n\n\n\n\n\n\n\n${ATTN}test xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${RESET}"
-ce "$CANARY" "_self xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-me "main xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-we "warn xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-ge "green xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-pe "purple xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-
-
+# <realpath> requires GNU coreutils on macOS - 'brew install coreutils'
+#   else use this:
+if [[ $(realpath $0 &>/dev/null) ]]; then
+    here=$(realpath $0)
+else
+    here=$([[ $0 = /* ]] && echo "$0" || echo "$PWD/${0#./}")
+fi
+pc_path="$here"
+if [ -r "${pc_path}.info.cfg" ]; then
+    source "${pc_path}.info.cfg"
+else
+    source "${bin_path}.info.cfg"
+fi
+echo $pc_path
+echo $bin_path
+echo $version
+echo "$_self is called"
 exit 0
 ###############################################################################
 # Install prerequisites as needed
@@ -253,7 +227,7 @@ setup_files () {
         if [ -r "$file_bak" ]; then
             cp -f $file_bak bak/$file_bak.bak &>/dev/null
         fi
-        cat "$here""$file_bak" >$file_bak
+        cat "$pc_path""$file_bak" >$file_bak
     }
 
     file_bak='.gitignore' && which_copy
