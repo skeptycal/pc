@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-
 ###############################################################################
 # pc : pre-commit repo automation for macOS (version 1.2.1)
 
@@ -65,9 +64,10 @@ pe "purple xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 exit 0
 ###############################################################################
-# Install prerequisites as needed
-#   brew, git, hub, pipenv, pre-commit
+#* Prerequisites
 prereqs_checkup() {
+    # Check for prerequisites - used during init session only
+    #   install prerequisites as needed: brew, git, hub, pipenv, pre-commit
     brew_checkup() {
         which -s brew &>/dev/null
         if [[ $? != 0 ]]; then
@@ -358,12 +358,7 @@ check_args() {
     esac
 }
 main_loop() {
-    git status &>/dev/null
-    if [[ $? != 0 ]]; then
-        all_checkups
-    else
-        yaml_checkup
-    fi
+    $(git status &>/dev/null) && yaml_checkup || all_checkups
 }
 
 if [[ -n "$1" ]]; then
