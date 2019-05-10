@@ -1,0 +1,15 @@
+.gitignore
+.info.cfg
+.pre-commit-config.yaml
+.pre-commit-template.yaml
+.travis.yml
+Pipfile
+Pipfile.lock
+baklist.txt
+codecov.yml
+pc
+readme.md
+readme.template.md
+requirements.txt
+script_example.md
+setup.py

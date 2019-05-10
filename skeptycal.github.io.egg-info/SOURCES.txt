@@ -1,0 +1,5 @@
+setup.py
+skeptycal.github.io.egg-info/PKG-INFO
+skeptycal.github.io.egg-info/SOURCES.txt
+skeptycal.github.io.egg-info/dependency_links.txt
+skeptycal.github.io.egg-info/top_level.txt
