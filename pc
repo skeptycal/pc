@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-###############################################################################
+#* #############################################################################
 # pc : pre-commit repo automation for macOS (version 1.2.1)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
@@ -21,49 +21,63 @@
 #       from .pre-commit-config.yaml as backup
 #   .pre-commit-config.yaml will be *overwritten*
 #       and updated to current master sha from GitHub
-###############################################################################
-# I had a lot of trouble with updating and hooks not working
-# Searching located some Stack Overflow posts with a simple fix
-# It helped in my case, but I thought this was a good chance
+#* #############################################################################
+# Disclaimer and reasoning:
+#   I had a lot of trouble with updating and hooks not working
+#   Searching located some Stack Overflow posts with a simple fix
+#   It helped in my case, but I thought this was a good chance
 #   to make a script to automate new project setup and periodic updates...
 #
-# based on pre-commit 1.15.1 <https://pre-commit.com/>
-###############################################################################
-# basic ansi text colors
-source "$HOME/bin/symlinks/scripts/basic_text_colors.sh"
+#   based on pre-commit 1.15.1 <https://pre-commit.com/>
+#* #############################################################################
 
-# identify script name and path
-_self=${0##*/}
-# _path="${0%/*}"
-here=$PWD'/'
-bin_path=$(realpath $0)
-bin_path="${bin_path%/*}"'/'
-# identify default settings path
-#   default is the folder of the real <pc> script after following symlinks,
-#   but you may adjust as needed to use a separate settings folder, (e.g.)
-# bin_path="$HOME/bin/utilities/pc_bak/"
+# FYI - I always use GNU Coreutils - on macOS: 'brew install coreutils'
+#* #############################################################################
+#* setup script variables and defaults
+    # identify default settings path (location for default copies of .info.cfg, .gitignore, README.md, .travis.yml, bitbucket_pipelines.yml, codedov.yml, gpg_public.txt, requirements.txt, Pipfile, setup.py, .pre-commit-config.yaml, etc)
+    #   default is the folder that this global script is running from,
+    #   but you may adjust as needed to use a separate settings folder,
+    #   (e.g.) bin_path="$HOME/bin/utilities/pc_bak/",
+    #       bin_path="$HOME/my/project/defaults/", etc
+    bin_path=$(realpath $0)
+    bin_path="${bin_path%/*}"'/'
 
-# load configuration file (.info.cfg) or default config
-source "${here}.info.cfg" &>/dev/null || source "${bin_path}.info.cfg" &>/dev/null
+    # identify this actual script name and current directory path
+    _self=${0##*/}
+    # parameter expansion to remove trailing /filename
+    # _path="${0%/*}"
+    here=$PWD'/'
 
-me "\n****************************************************************"
-oe "${description}\n"
-me "Project details: "
-me "================\n"
-ge "This script name: $_self"
-ge "The script path is: $bin_path"
-ge "The active repo is: $here"
+    # load configuration file (.info.cfg) or default config
+    source "${here}.info.cfg" &>/dev/null || source "${bin_path}.info.cfg" &>/dev/null
 
-echo -e "\n\n\n\n\n\n\n\n\n\n\n\n${ATTN}test"
-echo -e "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${RESET}"
-ce "$CANARY" "_self xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-me "main xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-we "warn xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-ge "green xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-pe "purple xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-exit 0
-###############################################################################
+echo() {
+  if [ "$#" -gt 0 ]; then
+     printf %s "$1"
+     shift
+  fi
+  if [ "$#" -gt 0 ]; then
+     printf ' %s' "$@"
+  fi
+  printf '\n'
+}
+
+bak() {
+    # backup $1 to the bak/ directory and add extension .bak
+    cp -rf "$here/$1" "$here/bak/$1.bak" &>/dev/null
+}
+
+#! color tests
+# echo "\n\n${ATTN}test"
+# echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${RESET}"
+# ce "$CANARY" "_selfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# me "main xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# we "warn xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# ge "green xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# pe "purple xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+#* #############################################################################
 #* Prerequisites
 prereqs_checkup() {
     # Check for prerequisites - used during init session only
@@ -72,19 +86,22 @@ prereqs_checkup() {
         which -s brew &>/dev/null
         if [[ $? != 0 ]]; then
             # Install Homebrew
-            echo 'Homebrew is required but not installed. Installing latest version ...'
+            we 'Homebrew is required but not installed. Installing latest version ...'
             echo ''
             xcode-select --install &>/dev/null
             ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             which -s brew &>/dev/null
             if [[ $? != 0 ]]; then
-                echo 'Homebrew is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                we 'Homebrew is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
                 echo ''
                 exit 1
             else
-                echo $(brew --version | tail -n +1 | head -1)' installed ... continuing with setup ...'
+                oe $(brew --version | tail -n +1 | head -1)' installed ... checking for updates ...'
                 echo ''
             fi
+        else
+            oe $(brew --version | tail -n +1 | head -1)' installed ... checking for updates ...'
+            echo ''
         fi
         brew update &>/dev/null
         brew doctor &>/dev/null
@@ -92,55 +109,66 @@ prereqs_checkup() {
     git_checkup() {
         which -s git &>/dev/null
         if [[ $? != 0 ]]; then
-            echo 'Git is required but not installed. Installing latest version ...'
+            we 'Git is required but not installed. Installing latest version ...'
             echo ''
             brew install git &>/dev/null
             which -s git &>/dev/null
             if [[ $? != 0 ]]; then
-                echo 'Git is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                we 'Git is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
                 echo ''
                 exit 1
             else
-                echo $(git --version | tail -n +1 | head -1)' installed ... continuing with setup ...'
+                oe $(git --version | tail -n +1 | head -1)' installed ... continuing with setup ...'
                 echo ''
             fi
+        else
             brew update git &>/dev/null
+            oe $(git --version | tail -n +1 | head -1)' installed ... continuing with setup ...'
+            echo ''
         fi
     }
     hub_checkup() {
         which -s hub &>/dev/null
         if [[ $? != 0 ]]; then
-            echo 'Hub is required but not installed. Installing latest version ...'
+            we 'Hub is required but not installed. Installing latest version ...'
             echo ''
             brew install hub &>/dev/null
             which -s hub &>/dev/null
             if [[ $? != 0 ]]; then
-                echo 'Hub is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                we 'Hub is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
                 echo ''
                 exit 1
             else
-                echo $(hub --version | grep hub)' installed ... continuing with setup ...'
+                oe $(hub --version | grep hub)' installed ... continuing with setup ...'
                 echo ''
             fi
+        else
             brew update hub &>/dev/null
+            oe $(hub --version | grep hub)' installed ... continuing with setup ...'
+                echo ''
         fi
     }
     pipenv_checkup() {
         which -s pipenv &>/dev/null
         if [[ $? != 0 ]]; then
-            echo 'Pipenv is required but not installed. Installing latest version ...'
+            we 'Pipenv is required but not installed. Installing latest version ...'
             echo ''
             brew install pipenv &>/dev/null
             which -s pipenv &>/dev/null
             if [[ $? != 0 ]]; then
-                echo 'Pipenv is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                we 'Pipenv is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
                 echo ''
                 exit 1
             else
-                echo $(pipenv --version)' installed ... continuing with setup ...'
+                oe $(pipenv --version)' installed ... continuing with setup ...'
                 echo ''
             fi
             brew update pipenv &>/dev/null
+            oe $(pipenv --version)' installed ... continuing with setup ...'
+            echo ''
+        else
+            oe $(pipenv --version)' installed ... continuing with setup ...'
+            echo ''
         fi
     }
     pre_commit_checkup() {
@@ -149,44 +177,47 @@ prereqs_checkup() {
             brew install pre-commit &>/dev/null
             which -s pre-commit &>/dev/null
             if [[ $? != 0 ]]; then
-                echo 'Pre-commit is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
+                we 'Pre-commit is required but the installation failed. Please check your internet connection and password (if needed) and run this program again. Exiting ...'
                 echo ''
                 exit 1
             else
-                echo $(pre-commit --version)' installed ... continuing with pre-commit setup'
-                echo ''
-                # use my sample template instead of `pre-commit sample-config`
-                echo "$sample_settings_template" >.pre-commit-template.yaml
-                pre-commit install
-                pre-commit install-hooks
-                pre-commit autoupdate
+                oe $(pre-commit --version)' installed ... continuing with pre-commit setup'
+                oe ''
             fi
+        else
+            oe $(pre-commit --version)' installed ... continuing with pre-commit setup'
         fi
     }
 
-    echo "Project setup: Brew, git, hub, pipenv, pre-commit, travis, codecov."
+    oe "Project setup: Brew, git, hub, pipenv, pre-commit, travis, codecov."
     echo ""
+    ge "Checking Prerequisites"
+    ge "Checking Homebrew"
     brew_checkup
+    ge "Checking Git"
     git_checkup
+    ge "Checking Hub"
     hub_checkup
+    ge "Checking PipEnv"
     pipenv_checkup
+    ge "Checking Pre-commit"
     pre_commit_checkup
 }
-###############################################################################
-# Setup Repo - git, github remote, pipenv install, pre-commit config
+#* #############################################################################
+#* Setup Repo - git, github remote, pipenv install, pre-commit config
 readme_md() {
     # Generate default README.md
-    cp -f README.md bak/README.bak.md &>/dev/null
-    echo "# $name version $version" >README.md
+    bak README.md
+    echo "# $name version $version" >|README.md
     echo "\n$badges\n" >>README.md
     echo $(date +"Last update: %m-%d-%Y | %T") >>README.md
-    echo -e "\n---\n" >>README.md
+    echo "\n---\n" >>README.md
     echo "## $detail\n" >>README.md
     echo '```bash\n' >>README.md
     echo "$program_instructions" >>README.md
     echo '```\n' >>README.md
-    echo -e "\n---\n" >>README.md
-    echo -e '```bash\n' >>README.md
+    echo "\n---\n" >>README.md
+    echo '```bash\n' >>README.md
     tree >>README.md
     echo '```\n' >>README.md
 }
@@ -194,37 +225,37 @@ yaml_checkup() {
     # pre-commit yaml: check for template, backup config, update new config
     yaml_backup() {
         if [ -r ".pre-commit-config.yaml" ]; then
-            cp -f .pre-commit-config.yaml bak/.pre-commit-config.yaml.bak
+            cp -rf "${here}.pre-commit-config.yaml" "${here}bak/.pre-commit-config.yaml.bak"
             error_code=$?
             if [[ $error_code != 0 ]]; then
-                echo "WARNING - backup file NOT created: .pre-commit-config.yaml.bak"
+                we "WARNING - backup file NOT created: .pre-commit-config.yaml.bak"
                 # ONLY WARN -- NO EXIT $error_code
             else
-                echo "-> backup file created: .pre-commit-config.yaml.bak"
+                oe "-> backup file created: ${here}.pre-commit-config.yaml.bak"
             fi
         fi
     }
     yaml_config() {
         # copy template to current config file
         readme_md
-        cat .pre-commit-template.yaml >.pre-commit-config.yaml
+        cp -rf "${here}.pre-commit-template.yaml" "${here}.pre-commit-config.yaml"
         error_code=$?
         #   and check to make sure it worked ...
         if [[ $error_code != 0 ]]; then
-            echo "WARNING: config file NOT created: .pre-commit-config.yaml"
-            echo 'Exiting now ...'
+            we "WARNING: config file NOT created: .pre-commit-config.yaml"
+            we 'Exiting now ...'
             exit $error_code
         else
-            echo "-> config file created: .pre-commit-config.yaml"
+            oe "-> config file created: .pre-commit-config.yaml"
         fi
         # update current config from GitHub repo
         #   and check to make sure it worked ...
         pre-commit autoupdate
         if [[ $? != 0 ]]; then
-            echo -e "\nWARNING: Error occured while retrieving updated 'master:sha' values from GitHub. Please check your connection and try again later.\n\n"
+            we -e "\nWARNING: Error occured while retrieving updated 'master:sha' values from GitHub. Please check your connection and try again later.\n\n"
             exit 1
         else
-            echo -e "\nPre-commit successfully updated your configuration."
+            oe -e "\nPre-commit successfully updated your configuration."
             git add --all &>/dev/null
             pre-commit &>/dev/null # catch formatting fixes
             git add --all          # again ... after formatting ...
@@ -233,14 +264,14 @@ yaml_checkup() {
     }
 
     # check for a template ... generate if necessary ...
-    if [ -r ".pre-commit-template.yaml" ]; then
-        echo "Template file (.pre-commit-template.yaml) found in current directory."
+    if [ -r "${here}.pre-commit-template.yaml" ]; then
+        oe "Template file (${here}.pre-commit-template.yaml) found in current directory."
     else
         # ONLY WARN -- NO EXIT ... generate needed default template
-        echo "WARNING: Template file (.pre-commit-template.yaml) NOT found in current directory."
-        echo "Using generic template ..."
+        we "WARNING: Template file (${here}.pre-commit-template.yaml) NOT found in current directory."
+        we "Using generic template ..."
         echo ""
-        echo "$sample_settings_template" >.pre-commit-template.yaml
+        cp -rf "${here}.pre-commit-template.yaml" "${here}.pre-commit-config.yaml"
     fi
     yaml_backup
     yaml_config
@@ -251,7 +282,7 @@ setup_files() {
         if [ -r "$file_bak" ]; then
             cp -f $file_bak bak/$file_bak.bak &>/dev/null
         fi
-        cat "$here""$file_bak" >$file_bak
+        cat "$here""$file_bak" >|$file_bak
     }
 
     file_bak='.gitignore' && which_copy
@@ -267,7 +298,7 @@ setup_files() {
         echo "Template file (.pre-commit-template.yaml) NOT found in current directory."
         echo "Using generic template ..."
         echo ""
-        echo "$sample_settings_template" >.pre-commit-template.yaml
+        echo "$sample_settings_template" >|.pre-commit-template.yaml
     fi
 }
 git_repo() {
@@ -296,7 +327,19 @@ git_repo() {
     pipenv clean
     pipenv graph
     pipenv check
-    pip freeze >requirements.txt
+    pip freeze >|requirements.txt
+    # pre-commit setup
+
+    # use my sample template instead of `pre-commit sample-config`
+    if [[ -z "$here.pre-commit-template.yaml" ]]; then
+        echo "$sample_settings_template" >|.pre-commit-template.yaml
+        we "Pre-commit template not found in $here. Using default template from $bin_path."
+    else
+        oe "Pre-commit template located in $here. Continuing with setup ..."
+    fi
+    pre-commit install
+    pre-commit install-hooks
+    pre-commit autoupdate
     # git initial commit
     git add --all &>/dev/null
     pre-commit &>/dev/null # catch formatting fixes
@@ -312,6 +355,8 @@ all_checkups() {
     git_repo
     yaml_checkup
 }
+#* #############################################################################
+#* Respond to arguments
 check_args() {
     case "$arg1" in
     init | -i | --init)
@@ -321,18 +366,18 @@ check_args() {
 
     reset | -r | --reset)
         echo ''
-        echo '-> pc - reset initial repo files'
+        we '-> pc - reset initial repo files\n'
         setup_files
         exit 0
         ;;
 
     version | -v | --version)
-        echo "$description"
+        oe "$program_usage"
         exit 0
         ;;
 
     help | -h | --help)
-        echo "$program_instructions"
+        oe "$program_instructions"
         exit 0
         ;;
 
@@ -344,22 +389,39 @@ check_args() {
             git push
             exit 0
         else
-            echo "You must specify a commit message to perform a commit."
+            we "You must specify a commit message to perform a commit."
             echo ""
             exit 2
         fi
         ;;
     *)
-        echo "Invalid option: $arg1"
+        we "Invalid option: $arg1"
         echo ""
-        echo "$program_usage"
+        oe "$program_usage"
         exit 2
         ;;
     esac
 }
 main_loop() {
+    # assume valid git repo means everything else is setup ...
+    #   if this is not true, <pc init> is available to user
     $(git status &>/dev/null) && yaml_checkup || all_checkups
 }
+
+#* #############################################################################
+# load some basic ansi text colors (OPTIONAL - output redirected)
+#   script will run fine wihout this; you just wont have the colors =)
+source "$HOME/bin/symlinks/scripts/basic_text_colors.sh" && oe "Basic Text Colors activated." || fake_colors
+#* #############################################################################
+#* script intro information
+me "\n****************************************************************"
+oe "${description}\n"
+me "Project details: "
+me "================\n"
+ge "This script name: $_self"
+ge "The script path is: $bin_path"
+ge "The active repo is: $here"
+echo
 
 if [[ -n "$1" ]]; then
     arg1="$1"
