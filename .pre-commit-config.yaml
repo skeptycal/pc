@@ -44,7 +44,7 @@ fail_fast: false
 # @see http://pre-commit.com/
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: 6d7906e131976a1ce14ab583badb734727c5da3e
+    rev: 45fc394c19e208123b8e9ec3f584c7ae3adef8c4
     hooks:
       - id: check-yaml
         files: \.(yaml|yml)$

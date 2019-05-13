@@ -403,9 +403,11 @@ check_args() {
     esac
 }
 main_loop() {
+
     # assume valid git repo means everything else is setup ...
     #   if this is not true, <pc init> is available to user
     $(git status &>/dev/null) && yaml_checkup || all_checkups
+
 }
 
 #* #############################################################################
