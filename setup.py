@@ -9,26 +9,27 @@ import io
 import os
 import sys
 from shutil import rmtree
+from typing import Dict, List
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 # Package meta-data.
-NAME = 'skeptycal.github.io'
-DESCRIPTION = 'A portfolio of various creative projects.'
-URL = 'https://github.com/skeptycal/skeptycal.github.io'
-EMAIL = 'skeptycal@gmail.com'
-AUTHOR = 'Michael Treanor'
-REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.1.0'
+NAME: str = 'skeptycal.github.io'
+DESCRIPTION: str = 'A portfolio of various creative projects.'
+URL: str = 'https://github.com/skeptycal/skeptycal.github.io'
+EMAIL: str = 'skeptycal@gmail.com'
+AUTHOR: str = 'Michael Treanor'
+REQUIRES_PYTHON: str = '>=3.6.0'
+VERSION: str = '0.1.0'
 
 # What packages are required for this module to be executed?
-REQUIRED = [
-    # 'requests', 'maya', 'records',
+REQUIRED: List[str] = [
+    'requests'
 ]
 
 # What packages are optional?
-EXTRAS = {
-    # 'fancy feature': ['django'],
+EXTRAS: Dict = {
+    'testgui': ['flask']
 }
 
 # The rest you shouldn't have to touch too much :)
@@ -37,20 +38,20 @@ EXTRAS = {
 # If you do change the License, remember to change the
 #   Trove Classifier for that!
 
-here = os.path.abspath(os.path.dirname(__file__))
+here: str = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
     with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-        long_description = '\n' + f.read()
+        long_description: str = '\n' + f.read()
 except FileNotFoundError:
     long_description = DESCRIPTION
 
 # Load the package's __version__.py module as a dictionary.
-about = {}
+about: Dict = {}
 if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+    project_slug: str = NAME.lower().replace("-", "_").replace(" ", "_")
     with open(os.path.join(here, project_slug, '__version__.py')) as f:
         exec(f.read(), about)  # pylint: disable=exec-used
 else:
@@ -60,8 +61,8 @@ else:
 class UploadCommand(Command):
     """Support setup.py upload."""
 
-    description = 'Build and publish the package.'
-    user_options = []
+    description: str = 'Build and publish the package.'
+    user_options: List = []
 
     @staticmethod
     def status(s):
