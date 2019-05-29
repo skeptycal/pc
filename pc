@@ -56,7 +56,7 @@
     mkdir -pv "$here/bak"
     # Set default readme file (usually <md> or <rst>)
     #    (<1st>, <now>, <txt>, or <asc> are older forms.)
-    readme='README.md'
+    readme="README.md"
 
     # load configuration file (.info.cfg) from repo directory (or default)
     source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
@@ -212,10 +212,9 @@ readme_md() {
     bak $readme
     if [ -r "$readme" ]; then
         # Modify $readme file if it exists
-        we "TODO Implement Update $readme date, version bump, tree, etc."
-    else
+    #     we "TODO Implement Update $readme date, version bump, tree, etc."
+    # else
         # Generate new default README.md
-        bak $readme
         echo "# $name version $version" >|$readme
         echo '' >>$readme
         echo "${badges}" >>$readme
@@ -339,67 +338,71 @@ all_checkups() {
 #* Respond to arguments
 check_args() {
     case "$1" in
-    init | -i | --init)
-        br
-        oe 'Initializing repository ...\n'
-        all_checkups
-        br
-        exit 0
-        ;;
-
-    reset | -r | --reset)
-        br
-        oe 'Resetting initial repo files ...\n'
-        setup_files
-        br
-        exit 0
-        ;;
-
-    version | -v | --version)
-        oe "$description"
-        br
-        exit 0
-        ;;
-
-    usage | -u | --usage)
-        oe "$program_usage"
-        br
-        exit 0
-        ;;
-
-    help | -h | --help)
-        oe "$program_instructions"
-        br
-        exit 0
-        ;;
-
-    readme)
-        readme_md
-        br
-        exit 0
-        ;;
-
-    commit | -m)
-        if [[ -z $2 ]]; then
-            we "You must specify a commit message to perform a commit."
+        init | -i | --init)
             br
-            exit 2
-        else
-            yaml_checkup
-            git add --all
-            git commit -m "$2"
-            git push
+            oe 'Initializing repository ...\n'
+            all_checkups
             br
             exit 0
-        fi
-        ;;
-    *)
-        we "Invalid option: $1"
-        echo ""
-        oe "$program_usage"
-        br
-        exit 2
-        ;;
+            ;;
+
+        reset | -r | --reset)
+            br
+            oe 'Resetting initial repo files ...\n'
+            setup_files
+            br
+            exit 0
+            ;;
+
+        version | -v | --version)
+            oe "$description"
+            br
+            exit 0
+            ;;
+
+        usage | -u | --usage)
+            oe "$program_usage"
+            br
+            exit 0
+            ;;
+
+        help | -h | --help)
+            oe "$program_instructions"
+            br
+            exit 0
+            ;;
+
+        readme)
+            readme_md
+            br
+            exit 0
+            ;;
+
+        commit | -m | --message)
+            if [[ -z $2 ]]; then
+                we "You must specify a commit message to perform a commit."
+                br
+                exit 2
+            else
+                yaml_checkup
+                git add --all &>/dev/null
+                pre-commit &>/dev/null # catch formatting fixes
+                git add --all          # again ... after formatting ...
+                git commit -m "$2"
+                git push
+                br
+                exit 0
+            fi
+            ;;
+
+        *)
+            we "Invalid option: $1"
+            echo ""
+            oe "$program_usage"
+            br
+            exit 2
+            ;;
+
     esac
     exit 0
 }
@@ -421,4 +424,4 @@ main_loop() {
 
 #* #########################################################################
 #* if arguments are present ... go to check_args else main_loop
-    [ $# -gt 0 ] && check_args "$@" || main_loop "$@"
+    [[ -n "$1" ]] && check_args "$@" || main_loop "$@"
