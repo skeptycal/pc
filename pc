@@ -59,7 +59,12 @@
     readme="README.md"
 
     # load configuration file (.info.cfg) from repo directory (or default)
-    source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
+    source "${here}/.info.cfg" || source "${bin_path}/.info.cfg" &>/dev/null
+
+    echo "badges: $badges"
+    echo "here: $here"
+    echo "bin: $bin_path"
+    exit 0
 
     # list of files that *may* be present and should be backed up
     file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .travis.yml .bitbucket-pipelines.yml codecov.yml .babelrc .dockerignore .env-sample azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )

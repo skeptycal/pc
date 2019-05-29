@@ -2,7 +2,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/416b8ca3-82db-470f-9adf-a6d06264ca75/deploy-status)](https://app.netlify.com/sites/mystifying-keller-ab5658/deploys)  ![Azure DevOps builds](https://img.shields.io/azure-devops/build/skeptycal0275/skeptycal/1.svg?color=blue&label=Azure%20DevOps&style=popout) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask.svg?color=Yellow&label=Python&style=popout) ![Twitter Follow](https://img.shields.io/twitter/follow/skeptycal.svg?label=%40skeptycal&style=social) ![GitHub followers](https://img.shields.io/github/followers/skeptycal.svg?style=social)
 
-Last update: 05-29-2019 | 10:44:55
+Last update: 05-29-2019 | 11:04:25
 
 ---
 
@@ -59,6 +59,8 @@ Last update: 05-29-2019 | 10:44:55
 ```bash
 .
 ├── LICENSE
+├── Pipfile
+├── Pipfile.lock
 ├── bak
 │   ├── Pipfile
 │   ├── Pipfile.lock
@@ -93,5 +95,5 @@ Last update: 05-29-2019 | 10:44:55
 └── static
     └── license-MIT-blue.svg
 
-6 directories, 28 files
+6 directories, 30 files
 ```

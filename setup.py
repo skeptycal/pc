@@ -22,7 +22,7 @@ URL = "https://github.com/skeptycal/"
 EMAIL = "skeptycal@gmail.com"
 AUTHOR = "Michael Treanor"
 REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "1.5.3"
+VERSION = "1.6.3"
 README_FILENAME = "README.md"
 
 SCRIPTS_LIST = ["text_colors.py"]
@@ -126,7 +126,7 @@ setup(
     include_package_data=True,
     package_data=PACKAGE_DATA,
     packages=find_packages(
-        exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+        exclude=["tests", "*.tests", "*.tests.*", "tests.*", "test_*.*"]),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['text_colors.py'],
     # * Options for packaging:
