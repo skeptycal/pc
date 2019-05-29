@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #* #############################################################################
-# pc : pre-commit repo automation for macOS (version 1.2.1)
+# pc : pre-commit repo automation for macOS (version 1.5.3)
 
 # author    - Michael Treanor  <skeptycal@gmail.com>
 # copyright - 2019 (c) Michael Treanor
@@ -8,13 +8,14 @@
 # github    - https://www.github.com/skeptycal
 
 # Usage: pc {init|reset|version|help}
-
+#
 #   Parameters:
-#       init, -i, --init        -- install and initialize
-#       reset, -r, --reset      -- reset initial repo files (with backup)
-#       version, -v, --version  -- display version information
-#       help, -h, --help        -- display usage and information
-
+#       [init, -i, --init]        -- install and initialize
+#       [commit, -m] MESSAGE      -- git commit and push with MESSAGE
+#       [reset, -r, --reset]      -- reset initial repo files (with backup)
+#       [version, -v, --version]  -- display version information
+#       [help, -h, --help]        -- display usage and information"
+#
 #   .pre-commit-template.yaml must be in current directory
 #       If not, a generic template will be created
 #   .pre-commit-bak.yaml will be created (if possible)
@@ -32,8 +33,7 @@
 #* #############################################################################
 #* setup script variables and defaults
     # FYI - I always use GNU Coreutils - on macOS: 'brew install coreutils'
-    #
-#* #########################################################################
+
     # load some basic ansi text colors (OPTIONAL - output redirected)
     #   script will run fine wihout this; you just wont have the colors =)
     source "$HOME/bin/symlinks/scripts/basic_text_colors.sh" &>/dev/null || fake_colors
@@ -62,7 +62,7 @@
     source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
 
     # list of files that *may* be present and should be backed up
-    file_list=( license LICENSE .GITIGNORE .gitignore .info.cfg .travis.yml .bitbucket-pipelines.yml codecov.yml .babelrc .dockerignore .env-sample azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt webpack.config.js uwsgi.ini )
+    file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .travis.yml .bitbucket-pipelines.yml codecov.yml .babelrc .dockerignore .env-sample azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
 
 echo() {
     # This makes echo more consistent and portable
@@ -212,22 +212,30 @@ readme_md() {
     bak $readme
     if [ -r "$readme" ]; then
         # Modify $readme file if it exists
-        we "Update $readme"
+        we "TODO Implement Update $readme date, version bump, tree, etc."
     else
         # Generate new default README.md
         bak $readme
         echo "# $name version $version" >|$readme
-        echo "\\n${badges}\\n" >>$readme
+        echo '' >>$readme
+        echo "${badges}" >>$readme
+        echo '' >>$readme
         echo $(date +"Last update: %m-%d-%Y | %T") >>$readme
-        echo "\\n---\\n" >>$readme
-        echo "## $detail\\n" >>$readme
-        echo '```bash\\n' >>$readme
+        echo '' >>$readme
+        echo "---" >>$readme
+        echo '' >>$readme
+        echo "### $detail" >>$readme
+        echo '' >>$readme
+        echo '```bash' >>$readme
         echo "$program_instructions" >>$readme
-        echo '```\\n' >>$readme
-        echo "\\n---\\n" >>$readme
-        echo '```bash\\n' >>$readme
+        echo '```' >>$readme
+        echo '' >>$readme
+        echo "---" >>$readme
+        echo '' >>$readme
+        echo '```bash' >>$readme
         tree >>$readme
-        echo '```\\n' >>$readme
+        echo '```' >>$readme
+        echo '' >>$readme
     fi
 }
 setup_files() {
@@ -249,12 +257,12 @@ setup_files() {
 git_repo() {
     git status &>/dev/null
     if [[ $? != 0 ]]; then
-        echo 'This is not a git repo. Setting up git and github ...'
+        oe 'This is not a git repo. Setting up git and github ...'
         br
-        echo 'Git repo setup ...'
+        ge 'Git repo setup ...'
         br
         git init
-        echo 'GitHub remote repo setup ...'
+        ge 'GitHub remote repo setup ...'
         br
         hub create
         br
@@ -262,8 +270,8 @@ git_repo() {
     # initialize pipenv
     pipenv graph &>/dev/null
     if [[ $? != 0 ]]; then
-        echo 'This is not a pipenv virtual environment.'
-        echo 'Setting up pipenv --python 3.7 ...'
+        oe 'This is not a pipenv virtual environment.'
+        ge 'Setting up pipenv --python 3.7 ...'
         br
         pipenv --python 3.7
     fi
@@ -271,7 +279,7 @@ git_repo() {
     pipenv clean
     pipenv graph
     pipenv check
-    pip freeze >|requirements.txt
+    pipenv run pip freeze >|requirements.txt
     # pre-commit setup
     pre-commit install
     pre-commit install-hooks
@@ -288,7 +296,7 @@ yaml_checkup() {
     # pre-commit yaml: backup config, check for template, update new config
     yaml_config() {
         check_template
-        # ? readme_md
+        readme_md
         cp -f "${here}/.pre-commit-template.yaml" "${here}/.pre-commit-config.yaml"
         error_code=$?
         #   and check to make sure it worked ...
@@ -297,7 +305,7 @@ yaml_checkup() {
             we 'Exiting now ...'
             exit $error_code
         else
-            oe "Config file created: .pre-commit-config.yaml"
+            oe "Config file updated: .pre-commit-config.yaml"
         fi
         # update current config from GitHub repo
         #   and check to make sure it worked ...
@@ -307,6 +315,7 @@ yaml_checkup() {
             exit 1
         else
             oe "\nPre-commit successfully updated your configuration."
+            ce $RESET
             git add --all &>/dev/null
             pre-commit &>/dev/null # catch formatting fixes
             git add --all          # again ... after formatting ...
@@ -315,6 +324,8 @@ yaml_checkup() {
     }
     bak .pre-commit-config.yaml
     yaml_config
+    git push
+    exit 0
 }
 all_checkups() {
     oe "Project setup: Brew, git, hub, pipenv, pre-commit, travis, codecov."
@@ -322,6 +333,7 @@ all_checkups() {
     setup_files
     git_repo
     yaml_checkup
+    exit 0
 }
 #* #############################################################################
 #* Respond to arguments
@@ -357,6 +369,12 @@ check_args() {
 
     help | -h | --help)
         oe "$program_instructions"
+        br
+        exit 0
+        ;;
+
+    readme)
+        readme_md
         br
         exit 0
         ;;
@@ -403,10 +421,4 @@ main_loop() {
 
 #* #########################################################################
 #* if arguments are present ... go to check_args else main_loop
-    if [ $# -gt 0 ]; then
-        check_args "$@"
-        exit 0
-    else
-        main_loop "$@"
-        exit 0
-    fi
+    [ $# -gt 0 ] && check_args "$@" || main_loop "$@"

@@ -44,7 +44,7 @@ fail_fast: false
 # @see http://pre-commit.com/
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: 45fc394c19e208123b8e9ec3f584c7ae3adef8c4
+    rev: v2.2.3
     hooks:
       - id: check-yaml
         files: \.(yaml|yml)$
@@ -59,15 +59,15 @@ repos:
       #   -   id: detect-aws-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
-      - id: flake8
+      # - id: flake8
       # - id: pretty-format-json
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   # Python settings ... replace as needed
-  - repo: git://github.com/pre-commit/mirrors-pylint
-    rev: v2.3.1
-    hooks:
-      - id: pylint
+  # - repo: git://github.com/pre-commit/mirrors-pylint
+  #   sha: master
+  #   hooks:
+  #     - id: pylint
 # PHP settings ... replace as needed
 # - repo: git@github.com:hootsuite/pre-commit-php.git
 #   sha: 1.1.0
