@@ -41,8 +41,9 @@
     #   default is the folder that this global script is running from,
     #   but you may adjust as needed to use a separate settings folder,
     #   (e.g.) bin_path="$HOME/bin/utilities/",
-    bin_path=$(realpath $0)
-    bin_path="${bin_path%/*}"
+    # bin_path=$(realpath $0)
+    # bin_path="${bin_path%/*}"
+    bin_path="/Volumes/Data/skeptycal/bin/utilities/pc_bak"
     #   (location for default copies of .info.cfg, .gitignore, README.md
     #   .travis.yml, bitbucket_pipelines.yml, codedov.yml, gpg_public.txt
     #   requirements.txt, Pipfile, setup.py, .pre-commit-config.yaml, etc)
@@ -52,14 +53,19 @@
     # parameter expansion to remove trailing /filename
     # _path="${0%/*}"
     here=$PWD
+    backup_dir="$here/bak"
+    readme='README.md'
+    echo $bin_path
+    echo $here
+    echo $backup_dir
+    echo $readme
 
-    mkdir -pv "$here/bak"
+    mkdir -pv "$backup_dir" &>/dev/null
     # Set default readme file (usually <md> or <rst>)
     #    (<1st>, <now>, <txt>, or <asc> are older forms.)
-    readme="README.md"
 
     # load configuration file (.info.cfg) from repo directory (or default)
-    source "${here}/.info.cfg" || source "${bin_path}/.info.cfg" &>/dev/null
+    source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
 
     # echo "badges: $badges"
     # echo "here: $here"
@@ -67,7 +73,7 @@
     # exit 0
 
     # list of files that *may* be present and should be backed up
-    file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .python-version .travis.yml bitbucket-pipelines.yml code-of-conduct.md codecov.yml .babelrc .dockerignore .env-sample gpg_public.txt readme.template.md script_example.md azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
+    declare -a file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .python-version .travis.yml bitbucket-pipelines.yml code-of-conduct.md codecov.yml .babelrc .dockerignore .env-sample gpg_public.txt readme.template.md script_example.md azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
 
 echo() {
     # This makes echo more consistent and portable
@@ -87,7 +93,9 @@ bak() {
     # backup $1
     #    to the bak/ directory in current directory
     #    add extension .bak
-    [ -r "$1" ] && cp -f "$here/$1" "$here/bak/$1.bak" &>/dev/null || (we "Not able to create backup for ${1}.")
+    [ -r "$1" ] && cp -f "$here/$1" "$here/bak/$1.bak" &>/dev/null
+    echo "copy text: $here/$1 $here/bak/$1.bak "
+    # || (we "Not able to create backup for ${1}.")
 }
 check_template() {
     if [ -r ".pre-commit-template.yaml" ]; then
@@ -214,6 +222,7 @@ prereqs_checkup() {
 #* #############################################################################
 #* Setup Repo - git, github remote, pipenv install, pre-commit config
 readme_md() {
+    echo "Creating file ($readme)"
     bak $readme
     if [ -r "$readme" ]; then
         # Modify $readme file if it exists
@@ -243,17 +252,13 @@ readme_md() {
     fi
 }
 setup_files() {
-    ge "Backup and reset of configuration files to $here/bak/ ..."
-    # for i in "${arrayName[@]}"
-    # do
-    # :
-    # # do whatever on $i
-    # done
+    ge "Reset of configuration files. Backup to $here/bak/ ..."
     for i in "${file_list[@]}"
     do
-        we ${i}
-        bak ${i}
+        we "${i}"
+        bak "${i}"
         [[ ! -r "${here}/${i}" ]] && cp "${bin_path}/${i}" "${here}/${i}" &>/dev/null
+        [[ ! -r "${here}/${i}" ]] && oe "${bin_path}/${i}" "${here}/${i}"
     done
     readme_md
     yaml_checkup
