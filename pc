@@ -67,7 +67,7 @@
     # exit 0
 
     # list of files that *may* be present and should be backed up
-    file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .travis.yml .bitbucket-pipelines.yml codecov.yml .babelrc .dockerignore .env-sample azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
+    file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .python-version .travis.yml bitbucket-pipelines.yml code-of-conduct.md codecov.yml .babelrc .dockerignore .env-sample gpg_public.txt readme.template.md script_example.md azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
 
 echo() {
     # This makes echo more consistent and portable

@@ -11,7 +11,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/skeptycal.svg?label=%40skeptycal&style=social)](https://twitter.com/skeptycal)
 [![GitHub followers](https://img.shields.io/github/followers/skeptycal.svg?style=social)](https://www.github.com/skeptycal)
 
-Last update: 05-29-2019 | 11:04:25
+Last update: 06-01-2019 | 19:27:44
 
 ---
 
@@ -86,6 +86,7 @@ Last update: 05-29-2019 | 11:04:25
 ├── bitbucket-pipelines.yml
 ├── build
 │   └── bdist.macosx-10.14-x86_64
+├── code-of-conduct.md
 ├── codecov.yml
 ├── dist
 │   └── skeptycal.github.io-0.1.0-py3.7.egg
@@ -104,5 +105,5 @@ Last update: 05-29-2019 | 11:04:25
 └── static
     └── license-MIT-blue.svg
 
-6 directories, 30 files
+6 directories, 31 files
 ```
