@@ -32,48 +32,67 @@
 #   based on pre-commit 1.15.1 <https://pre-commit.com/>
 #* #############################################################################
 #* setup script variables and defaults
-    # FYI - I always use GNU Coreutils - on macOS: 'brew install coreutils'
 
-    # load some basic ansi text colors (OPTIONAL - output redirected)
-    #   script will run fine wihout this; you just wont have the colors =)
-    source "$HOME/bin/symlinks/scripts/basic_text_colors.sh" &>/dev/null || fake_colors
-    # Identify default settings path
-    #   default is the folder that this global script is running from,
-    #   but you may adjust as needed to use a separate settings folder,
-    #   (e.g.) bin_path="$HOME/bin/utilities/",
-    # bin_path=$(realpath $0)
-    # bin_path="${bin_path%/*}"
-    bin_path="/Volumes/Data/skeptycal/bin/utilities/pc_bak"
-    #   (location for default copies of .info.cfg, .gitignore, README.md
-    #   .travis.yml, bitbucket_pipelines.yml, codedov.yml, gpg_public.txt
-    #   requirements.txt, Pipfile, setup.py, .pre-commit-config.yaml, etc)
 
-    # identify this actual script name and current directory path
-    _self=${0##*/}
-    # parameter expansion to remove trailing /filename
-    # _path="${0%/*}"
-    here=$PWD
-    backup_dir="$here/bak"
-    readme='README.md'
-    echo $bin_path
-    echo $here
-    echo $backup_dir
-    echo $readme
+[[ -z "$bin_path" ]] && export bin_path="/Volumes/Data/skeptycal/bin/utilities/pc_bak"
 
-    mkdir -pv "$backup_dir" &>/dev/null
-    # Set default readme file (usually <md> or <rst>)
-    #    (<1st>, <now>, <txt>, or <asc> are older forms.)
+# load some basic ansi text colors (OPTIONAL - output redirected)
+#   script will run fine wihout this; you just wont have the colors =)
+source "/Volumes/Data/skeptycal/bin/utilities/scripts/basic_text_colors.sh" &>/dev/null || ( echo "failed to load module 'basic_text_colors.sh'"; exit 2 )
 
-    # load configuration file (.info.cfg) from repo directory (or default)
-    source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
+# identify this actual script name and current directory path
+_self=${0##*/}
+# parameter expansion to remove trailing /filename
+# _path="${0%/*}"
+function check_file() {
+    # testing file properties
+    local name=$1
+    local path=(${!1})
+    echo "name: $name"
+    echo "path: $path"
+    local tmp_chk=''
+    [[ -e "$path" ]] && tmp_chk="${tmp_chk} exists" || tmp_chk="${tmp_chk} does-not-exist"
+    [[ -f "$path" ]] && tmp_chk="${tmp_chk} regular"
+    [[ -L "$path" ]] && tmp_chk="${tmp_chk} link"
+    [[ -d "$path" ]] && tmp_chk="${tmp_chk} directory"
+    [[ -r "$path" ]] && tmp_chk="${tmp_chk} readable"
+    [[ -s "$path" ]] && tmp_chk="${tmp_chk} size>0"
+    [[ -w "$path" ]] && tmp_chk="${tmp_chk} writable"
+    [[ -x "$path" ]] && tmp_chk="${tmp_chk} executable"
+    [[ -O "$path" ]] && tmp_chk="${tmp_chk} owned-by-me"
+    [[ -N "$path" ]] && tmp_chk="${tmp_chk} dirty"
+    [[ -k "$path" ]] && tmp_chk="${tmp_chk} sticky"
+    echo " ->$tmp_chk"
+    echo ''
+}
 
-    # echo "badges: $badges"
-    # echo "here: $here"
-    # echo "bin: $bin_path"
-    # exit 0
+# source configuration file (.info.cfg) or default
+source "${here}/.info.cfg" &>/dev/null || source "${bin_path}/.info.cfg" &>/dev/null
 
-    # list of files that *may* be present and should be backed up
-    declare -a file_list=( license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .python-version .travis.yml bitbucket-pipelines.yml code-of-conduct.md codecov.yml .babelrc .dockerignore .env-sample gpg_public.txt readme.template.md script_example.md azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini )
+here=$PWD
+backup_dir="${here}/bak"
+[[ -f "${here}/.info.cfg" ]] && info_file="${here}/.info.cfg"
+
+# If exist backup_dir _ else mkdir
+[[ -d "$backup_dir" ]] || mkdir -pv "$backup_dir" &>/dev/null
+
+# Set default readme file (usually <md> or <rst>)
+#    (<1st>, <now>, <txt>, or <asc> are older forms.)
+readme="${here}/README.md"
+
+check_file "_self" "$_self"
+check_file "bin_path" "$bin_path"
+check_file "here" "$here"
+check_file "backup_dir" "$backup_dir"
+check_file "readme" "$readme"
+check_file "info_file" "$info_file"
+# echo "badges: $badges"
+echo "version: $version"
+
+# exit 0
+
+# list of files that *may* be present and should be backed up
+declare -a file_list=(license LICENSE .GITIGNORE MANIFEST.in .gitignore .info.cfg .python-version .travis.yml bitbucket-pipelines.yml code-of-conduct.md codecov.yml .babelrc .dockerignore .env-sample gpg_public.txt readme.template.md script_example.md azure-ci-pipeline.yml azure-deploy-pipeline.yml docker-compose.yml Dockerfile dockerfile tox.ini makefile manage.py package.json pipfile pytest.ini requirements.txt setup.py webpack.config.js uwsgi.ini)
 
 echo() {
     # This makes echo more consistent and portable
@@ -226,8 +245,8 @@ readme_md() {
     bak $readme
     if [ -r "$readme" ]; then
         # Modify $readme file if it exists
-    #     we "TODO Implement Update $readme date, version bump, tree, etc."
-    # else
+        #     we "TODO Implement Update $readme date, version bump, tree, etc."
+        # else
         # Generate new default README.md
         echo "# $name version $version" >|$readme
         echo '' >>$readme
@@ -253,8 +272,7 @@ readme_md() {
 }
 setup_files() {
     ge "Reset of configuration files. Backup to $here/bak/ ..."
-    for i in "${file_list[@]}"
-    do
+    for i in "${file_list[@]}"; do
         we "${i}"
         bak "${i}"
         [[ ! -r "${here}/${i}" ]] && cp "${bin_path}/${i}" "${here}/${i}" &>/dev/null
@@ -348,70 +366,70 @@ all_checkups() {
 #* Respond to arguments
 check_args() {
     case "$1" in
-        init | -i | --init)
-            br
-            oe 'Initializing repository ...\n'
-            all_checkups
-            br
-            exit 0
-            ;;
+    init | -i | --init)
+        br
+        oe 'Initializing repository ...\n'
+        all_checkups
+        br
+        exit 0
+        ;;
 
-        reset | -r | --reset)
-            br
-            oe 'Resetting initial repo files ...\n'
-            setup_files
-            br
-            exit 0
-            ;;
+    reset | -r | --reset)
+        br
+        oe 'Resetting initial repo files ...\n'
+        setup_files
+        br
+        exit 0
+        ;;
 
-        version | -v | --version)
-            oe "$description"
-            br
-            exit 0
-            ;;
+    version | -v | --version)
+        oe "$description"
+        br
+        exit 0
+        ;;
 
-        usage | -u | --usage)
-            oe "$program_usage"
-            br
-            exit 0
-            ;;
+    usage | -u | --usage)
+        oe "$program_usage"
+        br
+        exit 0
+        ;;
 
-        help | -h | --help)
-            oe "$program_instructions"
-            br
-            exit 0
-            ;;
+    help | -h | --help)
+        oe "$program_instructions"
+        br
+        exit 0
+        ;;
 
-        readme)
-            readme_md
-            br
-            exit 0
-            ;;
+    readme)
+        readme_md
+        br
+        exit 0
+        ;;
 
-        commit | -m | --message)
-            if [[ -z $2 ]]; then
-                we "You must specify a commit message to perform a commit."
-                br
-                exit 2
-            else
-                yaml_checkup
-                git add --all &>/dev/null
-                pre-commit &>/dev/null # catch formatting fixes
-                git add --all          # again ... after formatting ...
-                git commit -m "$2"
-                git push
-                br
-                exit 0
-            fi
-            ;;
-
-        *)
-            we "Invalid option: $1"
-            echo ""
-            oe "$program_usage"
+    commit | -m | --message)
+        if [[ -z $2 ]]; then
+            we "You must specify a commit message to perform a commit."
             br
             exit 2
-            ;;
+        else
+            yaml_checkup
+            git add --all &>/dev/null
+            pre-commit &>/dev/null # catch formatting fixes
+            git add --all          # again ... after formatting ...
+            git commit -m "$2"
+            git push
+            br
+            exit 0
+        fi
+        ;;
+
+    *)
+        we "Invalid option: $1"
+        echo ""
+        oe "$program_usage"
+        br
+        exit 2
+        ;;
 
     esac
     exit 0
@@ -434,4 +452,4 @@ main_loop() {
 
 #* #########################################################################
 #* if arguments are present ... go to check_args else main_loop
-    [[ -n "$1" ]] && check_args "$@" || main_loop "$@"
+[[ -n "$1" ]] && check_args "$@" || main_loop "$@"
